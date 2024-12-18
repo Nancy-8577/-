@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>賽特數據輔助選台</title>
+    <meta name="description" content="賽特數據輔助選台">
+    <link rel="stylesheet" href="/css/FC6688.css">
+    <style>
+        body {
+            background-color: #FFF7FB;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: #003D79;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 90%;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            display: none;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h2,
+        p {
+            margin: 0 0 10px;
+        }
+
+        .highlight {
+            color: #ffde00;
+            font-size: 1.5em;
+        }
+
+        .warning {
+            color: #ff0000;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            max-width: 400px; /* 保持相同寬度 */
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #111;
+            color: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #C4E1FF;
+            border: none;
+            border-radius: 5px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #00CACA;
+        }
+
+        #registerButton {
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        #lineButton {
+            margin-top: 10px;
+        }
+
+        #winnerMessages {
+            background-color: #000;
+            color: #ffde00;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #codeBox {
+            display: none;
+            background-color: #000;
+            color: #0f0;
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            white-space: pre-wrap;
+            font-family: monospace;
+            text-align: left;
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        #progressContainer {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        #progressBar {
+            width: 0;
+            height: 20px;
+            background-color: #ffde00;
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+
+        #progressText {
+            color: #F9F900;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container,
+            #codeBox {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+
+        /* 彩虹閃爍文字 */
+        @keyframes rainbowFlashing {
+            0% {
+                color: red;
+            }
+
+            16.7% {
+                color: orange;
+            }
+
+            33.4% {
+                color: yellow;
+            }
+
+            50.1% {
+                color: green;
+            }
+
+            66.8% {
+                color: blue;
+            }
+
+            83.5% {
+                color: indigo;
+            }
+
+            100% {
+                color: violet;
+            }
+        }
+
+        /* 閃爍的警告文字 */
+        #warningText,
+        #warningText2 {
+            animation: rainbowFlashing 2s linear infinite;
+            color: #ff0000;
+        }
+
+        /* 亂碼文字效果 */
+        .garbled-text {
+            font-family: monospace;
+            color: #006030; /* 螢光綠 */
+            font-size: 1.2em;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="registerButton" onclick="window.open('https://rggo5269.com/#/ag/ED8577')">註冊</button>
+    <button id="lineButton" onclick="return false;">僅供 富遊ED8577 會員使用</button>
+    <div class="container input-container" id="ipContainer">
+        <h2>ED8577專屬</h2>
+        <h2>請輸入卡號</h2>
+        <input type="text" id="cardNumberInput" placeholder="請輸入卡號">
+        <h2>選擇遊戲</h2>
+        <select id="systemProvider">
+            <option value="富遊電子-戰神賽特">富遊電子-戰神賽特</option>
+            <option value="富遊電子-忍">富遊電子-忍</option>
+            <option value="富遊電子-強棒HOMERUN">富遊電子-強棒HOMERUN</option>
+            <option value="富遊電子-神鬼戰士">富遊電子-神鬼戰士</option>
+            <option value="富遊電子-魔龍傳奇">富遊電子-魔龍傳奇</option>
+            <option value="富遊電子-祕寶探險">富遊電子-祕寶探險</option>
+            <option value="富遊電子-異星進化UpUp">富遊電子-異星進化UpUp</option>
+        </select>
+        <button onclick="confirmSelection()">確定</button>
+        <p class="warning">請先打開遊戲 否則無效</p>
+    </div>
+
+    <div class="container" id="resultContainer" style="display: none;">
+        <h2 id="initializingText">系統初始化中</h2>
+        <p id="countdownText" class="highlight"></p>
+        <p id="loadingStatus"></p>
+        <div id="progressContainer" style="display: none;">
+            <div id="progressBar"></div>
+            <p id="progressText"></p>
+        </div>
+        <p id="explosionRateText"></p>
+        <p id="suggestedAmountText"></p>
+        <p id="providerDisplayText"></p>
+        <p id="gameCodeText"></p>
+        <p id="recommendedMachineText"></p>
+        <p id="gameDisplayText"></p>
+        <p id="warningText"></p>
+        <p id="warningText2"></p>
+        <button id="resetButton" style="display:none;" onclick="resetRate()">重置機率</button>
+    </div>
+
+    <div id="winnerMessages"></div>
+    <div id="codeBox"></div>
+
+    <script src="/js/--FC6688-00.js"></script>
+    <script>
+        // 校驗卡號
+        function isValidCardNumber(cardNumber) {
+            return cardNumber === "251815";  // 只允許這個卡號
+        }
+
+        // 亂碼生成
+        function generateGarbledText() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-={}[]|:;,.<>?';
+            let text = '';
+            const length = Math.floor(Math.random() * 50) + 50;  // 隨機長度
+            for (let i = 0; i < length; i++) {
+                text += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return text;
+        }
+
+        // 逐字顯示亂碼
+        function showGarbledTextWithTypingEffect(container, text) {
+            let index = 0;
+            const typingInterval = setInterval(() => {
+                container.textContent += text.charAt(index);
+                index++;
+                if (index >= text.length) {
+                    clearInterval(typingInterval);
+                }
+            }, 150); // 改為每150ms顯示一個字符
+        }
+
+        // 生成多行亂碼
+        function generateMultipleLinesOfGarbledText() {
+            let lines = [];
+            for (let i = 0; i < 10; i++) {
+                let line = generateGarbledText();
+                lines.push(line);
+            }
+            return lines.join('\n');
+        }
+
+        // 確認選擇
+        function confirmSelection() {
+            const cardNumber = document.getElementById("cardNumberInput").value;
+            const selectedGame = document.getElementById("systemProvider").value;
+
+            if (!isValidCardNumber(cardNumber)) {
+                alert("無效卡號！");
+                return;
+            }
+
+            document.getElementById("ipContainer").style.display = "none";
+            document.getElementById("resultContainer").style.display = "block";
+
+            // 開始初始化進程
+            startInitialization(selectedGame);
+        }
+
+        // 開始初始化過程
+        function startInitialization(selectedGame) {
+            let countdown = 5;
+            let progress = 0;
+            const countdownText = document.getElementById("countdownText");
+            const initializingText = document.getElementById("initializingText");
+            const loadingStatus = document.getElementById("loadingStatus");
+            const progressBar = document.getElementById("progressBar");
+            const progressText = document.getElementById("progressText");
+            const progressContainer = document.getElementById("progressContainer");
+            const garbledTextContainer = document.createElement('div');
+            garbledTextContainer.classList.add('garbled-text');
+            document.body.appendChild(garbledTextContainer);
+
+            countdownText.textContent = countdown;
+
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                countdownText.textContent = countdown;
+                if (countdown === 0) {
+                    clearInterval(countdownInterval);
+                    countdownText.textContent = "";
+                    initializingText.style.display = "none";
+                    loadingStatus.innerHTML = '初始化完成 <br><br>正在提高爆分率';
+
+                    // 顯示進度條容器
+                    progressContainer.style.display = "block";
+
+                    const progressInterval = setInterval(() => {
+                        progress += 1; // 增加進度
+                        progressBar.style.width = `${progress}%`; // 更新進度條寬度
+                        progressText.textContent = `進度: ${progress}%`; // 顯示進度文字
+                        garbledTextContainer.textContent = generateMultipleLinesOfGarbledText(); // 顯示多行亂碼
+
+                        // 每次更新時逐字顯示亂碼
+                        showGarbledTextWithTypingEffect(garbledTextContainer, generateMultipleLinesOfGarbledText());
+
+                        if (progress >= 100) {
+                            clearInterval(progressInterval);
+                            progressText.textContent = "進度完成";
+                            progressContainer.style.display = "none"; // 隱藏進度條容器
+                            loadingStatus.style.display = "none"; // 隱藏加載狀態
+                            garbledTextContainer.style.display = "none"; // 隱藏亂碼顯示
+
+                            // 顯示後續內容
+                            const explosionRate = Math.floor(Math.random() * 20) + 1; // 隨機小於20的百分比
+                            const suggestedAmount = [5, 10, 20, 30][Math.floor(Math.random() * 4)]; // 隨機選擇建議金額
+
+                            document.getElementById("explosionRateText").textContent = `當前遊戲爆分機率已提高至 ${explosionRate}%`;
+                            document.getElementById("suggestedAmountText").textContent = `建議金額: ${suggestedAmount}元`;
+                            document.getElementById("providerDisplayText").textContent = `選擇遊戲: ${selectedGame}`;
+                            document.getElementById("recommendedMachineText").textContent = (() => {
+                                let randomMachineNumber;
+                                switch (selectedGame) {
+                                    case "富遊電子-戰神賽特":
+                                        randomMachineNumber = Math.floor(Math.random() * 800) + 1;
+                                        break;
+                                    case "富遊電子-忍":
+                                        randomMachineNumber = Math.floor(Math.random() * 200) + 1;
+                                        break;
+                                    case "富遊電子-強棒HOMERUN":
+                                    case "富遊電子-神鬼戰士":
+                                    case "富遊電子-魔龍傳奇":
+                                        randomMachineNumber = Math.floor(Math.random() * 100) + 1;
+                                        break;
+                                    case "富遊電子-祕寶探險":
+                                    case "富遊電子-異星進化UpUp":
+                                        randomMachineNumber = Math.floor(Math.random() * 40) + 1;
+                                        break;
+                                }
+                                return `推薦爆分機台號: ${randomMachineNumber}`;
+                            })();
+                            document.getElementById("warningText").textContent = "❗️網頁請不要刷新❗️";
+                            document.getElementById("warningText2").textContent = "導致失效自行負責";
+                        }
+                    }, 100); // 每100ms更新一次進度
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+
+
+</html>
